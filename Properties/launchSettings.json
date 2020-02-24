@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "OcrConsoleApp": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "NETCORE_ENVIRONMENT": "development"
+      }
+    }
+  }
+}
