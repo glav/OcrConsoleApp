@@ -11,13 +11,14 @@ namespace OcrConsoleApp
         {
             if (args.Length < 1)
             {
-                Console.WriteLine("Please supply a filename");
+                Console.WriteLine("Error!: Please supply a filename");
+                ShowArgumentFormat();
                 return null;
             }
             var inputFilename = args[0];
             if (!File.Exists(inputFilename))
             {
-                Console.WriteLine("No such file exists: [{0}]", inputFilename);
+                Console.WriteLine("Error!: No such file exists: [{0}]", inputFilename);
                 return null;
             }
 
@@ -29,23 +30,29 @@ namespace OcrConsoleApp
 
             if (AppConfig.Configuration == null)
             {
-                Console.WriteLine("Missing or invalid appsettings.json...exiting");
+                Console.WriteLine("Error!: Missing or invalid appsettings.json...exiting");
                 return null;
             }
 
             var apiKey = AppConfig.Configuration["apiKey"];
             if (string.IsNullOrWhiteSpace(apiKey))
             {
-                Console.WriteLine("Missing or invalid ApiKey...exiting");
+                Console.WriteLine("Error!: Missing or invalid ApiKey...exiting");
                 return null;
             }
 
-
-            //var filename = "c:\\temp\\equipment-list.jpg";
             Console.WriteLine("Processing file: [{0}]", inputFilename);
             Console.WriteLine("Output results to: [{0}]", string.IsNullOrEmpty(outFile) ? "Console" : outFile);
 
             return new CommandArgs(apiKey, inputFilename, outFile);
+        }
+
+        static void ShowArgumentFormat()
+        {
+            Console.WriteLine("\nFormat: OcrConsoleApp {InputFilename} [OutputFile]");
+            Console.WriteLine("\twhere {InputFilename} is mandatory and the image to use as input.");
+            Console.WriteLine("\twhere [OutputFile] is optional and the file to write the results to. If none is specified, results are output to console");
+
         }
     }
 }

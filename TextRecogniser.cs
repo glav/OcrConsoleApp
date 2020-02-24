@@ -1,6 +1,7 @@
 ﻿using Glav.CognitiveServices.FluentApi.ComputerVision;
 using Glav.CognitiveServices.FluentApi.Core;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -24,20 +25,32 @@ namespace OcrConsoleApp
                 return;
             }
 
+            Console.WriteLine("Job submitted for precessing...now awaiting result...");
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var result = initialCallResult
                     .WaitForOperationToCompleteAsync()
                     .Result;
+
+            stopwatch.Stop();
 
             if (result.Any(a => !a.ActionSubmittedSuccessfully))
             {
                 Console.WriteLine("One or more items not processed successfully");
                 return;
             }
+            Console.WriteLine("Job completed precessing - Time taken: [{0}h {1}m {1}s {2}ms]",
+                stopwatch.Elapsed.Hours,
+                stopwatch.Elapsed.Minutes,
+                stopwatch.Elapsed.Seconds,
+                stopwatch.Elapsed.Milliseconds);
 
             var builder = new StringBuilder();
             result.ToList().ForEach(r =>
             {
-                r.ResponseData.recognitionResult.lines.ToList().ForEach(l => builder.AppendLine(l.text));
+                r.ResponseData.recognitionResult.lines.ToList().ForEach(l => NoiseFilter.AddToBuffer(l.text,builder));
             });
 
             if (!config.OutputToFilename)
