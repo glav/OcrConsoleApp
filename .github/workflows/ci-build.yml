@@ -23,3 +23,9 @@ jobs:
       run: dotnet build --configuration Release --no-restore
     - name: Test
       run: dotnet test --no-restore --verbosity normal
+    
+    - name: Play with approvals
+      if: github.event.review.state == 'approved'
+      run: |
+        echo "Approved"
+        
